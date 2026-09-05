@@ -32,64 +32,303 @@ def get_supabase_client() -> Client:
 supabase = get_supabase_client()
 
 
-@st.cache_resource
-def get_cookie_controller():
-    return CookieController()
+# CookieController creates widget-like state and must not be wrapped in a
+# cached function; Streamlit treats that as a cache miss during startup.
+cookie_controller = CookieController()
 
 
-cookie_controller = get_cookie_controller()
+def persist_auth_session(user_id, access_token, refresh_token):
+    st.session_state["sb_user_id"] = user_id
+    st.session_state["sb_access_token"] = access_token
+    st.session_state["sb_refresh_token"] = refresh_token
+    cookie_controller.set("sb_access_token", access_token)
+    cookie_controller.set("sb_refresh_token", refresh_token)
+    cookie_controller.set("sb_user_id", user_id)
+
+
+def clear_auth_session():
+    for key in ["sb_user_id", "sb_access_token", "sb_refresh_token"]:
+        st.session_state.pop(key, None)
+    cookie_controller.set("sb_access_token", "")
+    cookie_controller.set("sb_refresh_token", "")
+    cookie_controller.set("sb_user_id", "")
+    try:
+        supabase.auth.sign_out()
+    except Exception:
+        pass
 
 
 def ensure_authenticated():
     """
-    Restores the visitor's identity across full page refreshes using a
-    browser cookie (st.session_state alone does NOT survive a refresh -
-    a real F5 starts a brand new Streamlit session).
+    Restore an existing email/password authentication session
+    from Streamlit session state or browser cookies.
 
-    Order of checks:
-    1. Already authenticated this run (session_state has it) -> reuse.
-    2. A valid cookie exists from a previous visit -> restore that
-       identity, so the user's watchlist reappears after a refresh.
-    3. Neither exists (first-ever visit) -> create a new anonymous
-       identity and store it in a cookie for next time.
-
-    Note: this still means a different browser/device gets a DIFFERENT
-    identity - cookies are per-browser. True cross-device persistence
-    needs a login step (planned: magic-link email).
+    Returns:
+        user_id if authenticated
+        None if the user needs to sign in
     """
-    if "sb_user_id" in st.session_state:
-        supabase.auth.set_session(
-            st.session_state["sb_access_token"],
-            st.session_state["sb_refresh_token"],
-        )
-        return st.session_state["sb_user_id"]
 
+    # 1. Already authenticated during this Streamlit run
+    if (
+        "sb_access_token" in st.session_state
+        and "sb_refresh_token" in st.session_state
+    ):
+        try:
+            supabase.auth.set_session(
+                st.session_state["sb_access_token"],
+                st.session_state["sb_refresh_token"],
+            )
+
+            user = supabase.auth.get_user()
+
+            if user and user.user:
+                st.session_state["sb_user_id"] = user.user.id
+                return user.user.id
+
+        except Exception:
+            pass
+
+    # 2. Try restoring session from browser cookies
     access_token = cookie_controller.get("sb_access_token")
     refresh_token = cookie_controller.get("sb_refresh_token")
 
     if access_token and refresh_token:
         try:
-            supabase.auth.set_session(access_token, refresh_token)
+            supabase.auth.set_session(
+                access_token,
+                refresh_token,
+            )
+
             user = supabase.auth.get_user()
-            st.session_state["sb_access_token"] = access_token
-            st.session_state["sb_refresh_token"] = refresh_token
-            st.session_state["sb_user_id"] = user.user.id
-            return st.session_state["sb_user_id"]
+
+            if user and user.user:
+                st.session_state["sb_access_token"] = access_token
+                st.session_state["sb_refresh_token"] = refresh_token
+                st.session_state["sb_user_id"] = user.user.id
+
+                return user.user.id
+
         except Exception:
-            pass  # cookie expired/invalid - fall through to a fresh sign-in
+            # Invalid/expired cookies.
+            # Do NOT create an anonymous user.
+            pass
 
-    auth_response = supabase.auth.sign_in_anonymously()
-    access_token = auth_response.session.access_token
-    refresh_token = auth_response.session.refresh_token
+    # 3. No valid login
+    return None
 
-    st.session_state["sb_access_token"] = access_token
-    st.session_state["sb_refresh_token"] = refresh_token
-    st.session_state["sb_user_id"] = auth_response.user.id
 
-    cookie_controller.set("sb_access_token", access_token)
-    cookie_controller.set("sb_refresh_token", refresh_token)
+def login_with_email(email, password):
+    try:
+        auth_response = supabase.auth.sign_in_with_password(
+            {"email": email, "password": password}
+        )
+        if auth_response.user and auth_response.session:
+            persist_auth_session(
+                auth_response.user.id,
+                auth_response.session.access_token,
+                auth_response.session.refresh_token,
+            )
+            return True, None
+        return False, "Sign-in failed. Please check your email and password."
+    except Exception as exc:
+        return False, str(exc)
 
-    return st.session_state["sb_user_id"]
+
+def signup_with_email(email, password):
+    try:
+        auth_response = supabase.auth.sign_up(
+            {"email": email, "password": password}
+        )
+        if auth_response.user and auth_response.session:
+            persist_auth_session(
+                auth_response.user.id,
+                auth_response.session.access_token,
+                auth_response.session.refresh_token,
+            )
+            return True, None
+        if auth_response.user:
+            return False, "Account created. Check your email to confirm and then sign in."
+        return False, "Could not create account. Please try again."
+    except Exception as exc:
+        return False, str(exc)
+
+
+def render_auth_screen():
+    st.markdown(
+        """
+        <div style="text-align:center; margin-top:60px;">
+            <h1 style="color:#101828;">Smart Market</h1>
+            <p style="color:#475467;">
+                Track. Analyze. Decide Smarter.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Default mode
+    if "auth_mode" not in st.session_state:
+        st.session_state.auth_mode = "signin"
+
+    # --------------------------------------------------------
+    # SIGN IN
+    # --------------------------------------------------------
+
+    if st.session_state.auth_mode == "signin":
+
+        st.subheader("Sign In")
+
+        with st.form("signin_form"):
+
+            email = st.text_input(
+                "Email",
+                placeholder="you@example.com",
+            )
+
+            password = st.text_input(
+                "Password",
+                type="password",
+                placeholder="Enter your password",
+            )
+
+            submitted = st.form_submit_button(
+                "Sign In",
+                use_container_width=True,
+            )
+
+        if submitted:
+
+            if not email or not password:
+                st.error("Please enter both email and password.")
+
+            else:
+                try:
+                    response = supabase.auth.sign_in_with_password(
+                        {
+                            "email": email,
+                            "password": password,
+                        }
+                    )
+
+                    if response.user is not None:
+
+                        persist_auth_session(
+                            response.user.id,
+                            response.session.access_token,
+                            response.session.refresh_token,
+                        )
+
+                        st.success("Signed in successfully.")
+                        st.rerun()
+
+                except Exception as e:
+                    st.error(f"Sign in failed: {e}")
+
+        # IMPORTANT:
+        # This button is OUTSIDE the form.
+        if st.button(
+            "Create an account",
+            key="go_to_signup",
+            use_container_width=True,
+        ):
+            st.session_state.auth_mode = "signup"
+            st.rerun()
+
+    # --------------------------------------------------------
+    # SIGN UP
+    # --------------------------------------------------------
+
+    else:
+
+        st.subheader("Create Account")
+
+        with st.form("signup_form"):
+
+            email = st.text_input(
+                "Email",
+                placeholder="you@example.com",
+            )
+
+            password = st.text_input(
+                "Password",
+                type="password",
+                placeholder="Create a password",
+            )
+
+            confirm_password = st.text_input(
+                "Confirm Password",
+                type="password",
+                placeholder="Re-enter your password",
+            )
+
+            submitted = st.form_submit_button(
+                "Create Account",
+                use_container_width=True,
+            )
+
+        if submitted:
+
+            if not email or not password or not confirm_password:
+                st.error("Please fill in all fields.")
+
+            elif password != confirm_password:
+                st.error("Passwords do not match.")
+
+            elif len(password) < 6:
+                st.error("Password must be at least 6 characters.")
+
+            else:
+
+                try:
+                    response = supabase.auth.sign_up(
+                        {
+                            "email": email,
+                            "password": password,
+                        }
+                    )
+
+                    if response.user is not None:
+
+                        # If email confirmation is disabled,
+                        # Supabase gives us a session immediately.
+                        if response.session:
+
+                            persist_auth_session(
+                                response.user.id,
+                                response.session.access_token,
+                                response.session.refresh_token,
+                            )
+
+                            st.success(
+                                "Account created successfully."
+                            )
+
+                            st.rerun()
+
+                        else:
+                            st.success(
+                                "Account created. "
+                                "Please check your email to confirm "
+                                "your account, then sign in."
+                            )
+
+                except Exception as e:
+                    st.error(f"Account creation failed: {e}")
+
+        # IMPORTANT:
+        # Also OUTSIDE the form.
+        if st.button(
+            "Already have an account? Sign In",
+            key="go_to_signin",
+            use_container_width=True,
+        ):
+            st.session_state.auth_mode = "signin"
+            st.rerun()
+
+
+# ============================================================
+# CUSTOM CSS
+# ============================================================
 
 
 # ============================================================
@@ -575,30 +814,36 @@ def calculate_trend(info, latest_price):
 
 def add_symbol(symbol):
     try:
-        supabase.table("watchlist").insert({"symbol": symbol}).execute()
+        supabase.table("watchlist").upsert(
+            {"symbol": symbol, "user_id": current_user_id},
+            on_conflict="user_id,symbol",
+        ).execute()
     except Exception:
         st.warning(f"{symbol} is already on your watchlist.")
 
 
 def remove_symbol(symbol):
-    supabase.table("watchlist").delete().eq("symbol", symbol).execute()
-    supabase.table("snapshots").delete().eq("symbol", symbol).execute()
+    supabase.table("watchlist").delete().eq("symbol", symbol).eq("user_id", current_user_id).execute()
+    supabase.table("snapshots").delete().eq("symbol", symbol).eq("user_id", current_user_id).execute()
 
 
 def get_watchlist():
     response = (
         supabase.table("watchlist")
         .select("symbol")
+        .eq("user_id", current_user_id)
         .order("added_at")
         .execute()
     )
-    return [row["symbol"] for row in response.data]
+    data = response.data or []
+    return [row["symbol"] for row in data]
 
 
 def get_last_snapshot(symbol):
     response = (
         supabase.table("snapshots")
         .select("last_price,last_viewed_at")
+        .eq("user_id", current_user_id)
         .eq("symbol", symbol)
         .execute()
     )
@@ -612,6 +857,7 @@ def save_snapshot(symbol, price):
     supabase.table("snapshots").upsert(
         {
             "symbol": symbol,
+            "user_id": current_user_id,
             "last_price": price,
             "last_viewed_at": datetime.now().isoformat(),
         },
@@ -624,9 +870,28 @@ def log_visit(symbol, score, level):
     real history of movement over time (not just the latest snapshot)."""
     supabase.table("visit_history").insert({
         "symbol": symbol,
+        "user_id": current_user_id,
         "score": score,
         "level": level,
     }).execute()
+
+
+def should_log_visit(symbol, score, level):
+    """Only log once per symbol per score/level in a single app session.
+
+    This avoids duplicate entries when Streamlit reruns on button clicks,
+    expand/collapse toggles, or state refreshes.
+    """
+    visit_state = st.session_state.setdefault("visit_log_state", {})
+    key = symbol
+    current = (float(score), str(level))
+    last = visit_state.get(key)
+
+    if last != current:
+        visit_state[key] = current
+        return True
+
+    return False
 
 
 def get_recent_significant_count(symbol, limit=5):
@@ -636,12 +901,13 @@ def get_recent_significant_count(symbol, limit=5):
     response = (
         supabase.table("visit_history")
         .select("level")
+        .eq("user_id", current_user_id)
         .eq("symbol", symbol)
         .order("visited_at", desc=True)
         .limit(limit)
         .execute()
     )
-    rows = response.data
+    rows = response.data or []
     total = len(rows)
     significant = sum(1 for r in rows if r["level"] in ("HIGH", "MEDIUM"))
     return significant, total
@@ -718,6 +984,9 @@ def trend_box_class(signal):
 
 current_user_id = ensure_authenticated()
 
+if not current_user_id:
+    render_auth_screen()
+    st.stop()
 
 # ============================================================
 # SIDEBAR
@@ -791,6 +1060,11 @@ with st.sidebar:
         f"<br><small>Session ID: {current_user_id[:8]}...</small>",
         unsafe_allow_html=True,
     )
+
+    if st.button("Log Out", key="logout_btn"):
+        clear_auth_session()
+        st.session_state["auth_mode"] = "signin"
+        st.rerun()
 
     st.markdown(
         "<br><small>Market data by Yahoo Finance</small>",
@@ -919,8 +1193,11 @@ for symbol in symbols:
 
         save_snapshot(symbol, latest_price)
 
-        # Log this visit's score, then check the recent pattern
-        log_visit(symbol, score, level)
+        # Avoid creating a new visit record on every Streamlit rerun. Only log when
+        # this symbol's score/level has changed within the active session.
+        if should_log_visit(symbol, score, level):
+            log_visit(symbol, score, level)
+
         sig_count, visit_count = get_recent_significant_count(symbol, limit=5)
 
         stock_data.append({
