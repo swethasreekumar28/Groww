@@ -250,6 +250,11 @@ def render_auth_screen():
                         {
                             "email": email,
                             "password": password,
+                            "options": {
+                                "email_redirect_to": (
+                                    "https://4dxy8beld8pg9unboqllgs.streamlit.app"
+                                ),
+                            },
                         }
                     )
  
