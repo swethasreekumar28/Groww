@@ -17,6 +17,15 @@ A market watchlist that doesn't just show prices — it tells you what actually 
 
 Stocks are sorted by this score, highest first, and a **Digest banner** at the top summarizes which stocks need attention in one glance — so you never have to scan every card manually.
 
+## Completed product scope
+
+- **Watchlist management** — add and remove stocks with persistent, per-user storage
+- **Latest market information** — live price, daily percentage change, trend, volatility, and recent movement pattern
+- **Meaningful change definition** — an explicit 0–100 score combining today's move, movement since the last visit, and volatility adjustment
+- **Dashboard** — cross-stock score, daily-change, and volatility comparisons, plus a score-ranked breakdown table
+- **Market Pulse** — discovery beyond the user's watchlist with explicit add actions and honest related-news links
+- **Navigation and visual polish** — working multipage navigation, deterministic avatars, urgency accent bars, hover cards, responsive summaries, and a consistent indigo/periwinkle visual system
+
 ## Key design decisions
 
 **Volatility-adjusted scoring, not raw % change.** A flat percentage threshold treats every stock the same; comparing movement against a stock's own historical volatility gives a more honest signal of what's actually unusual for that stock.
@@ -28,6 +37,8 @@ Stocks are sorted by this score, highest first, and a **Digest banner** at the t
 **Real per-user isolation via Supabase + Row-Level Security.** Each user authenticates with email (sign-up, email verification, sign-in), and Postgres Row-Level Security enforces that every query only touches that user's own rows — enforced at the database layer, not just in application code.
 
 **Session persistence via browser cookies.** Login state survives full page refreshes and closing/reopening the browser, not just in-memory state that would reset on every reload.
+
+**Shared market-data caching.** A 60-second cache reuses the same Yahoo Finance response across users for the same symbol. This keeps the app efficient as the watchlist and user count grow, while Supabase Row-Level Security keeps private user data isolated.
 
 ## Tech stack
 
@@ -83,9 +94,9 @@ The app will open at `http://localhost:8501`. Sign up with an email and password
 
 ## What's next (if extended beyond this hackathon)
 
-- A *"Market Discovery"* view surfacing unusually active stocks outside the user's own watchlist, reusing the existing volatility-scoring engine
 - Sector-level trend aggregation
 - Push/email alerts when a stock crosses a `HIGH` attention threshold
+- Larger and configurable discovery universes
 
 ---
 

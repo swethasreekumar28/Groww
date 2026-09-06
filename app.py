@@ -116,9 +116,26 @@ def ensure_authenticated():
 def render_auth_screen():
     st.markdown(
         """
-        <div style="text-align:center; margin-top:60px;">
-            <h1 style="color:#101828;">Smart Market</h1>
-            <p style="color:#475467;">
+        <div style="text-align:center; margin-top:50px; margin-bottom:10px;">
+            <div style="
+                display:inline-block;
+                padding:8px 20px;
+                border-radius:50px;
+                background:#2b3a8c;
+                color:white;
+                font-size:13px;
+                font-weight:700;
+                letter-spacing:0.5px;
+                margin-bottom:18px;
+            ">📈 SMART MARKET WATCHLIST</div>
+            <h1 style="
+                font-family:'Space Grotesk', sans-serif;
+                font-size:44px;
+                font-weight:700;
+                color:#141b3a;
+                margin:0;
+            ">Know what matters, faster.</h1>
+            <p style="color:#2b3a8c; font-size:15px; margin-top:8px;">
                 Track. Analyze. Decide Smarter.
             </p>
         </div>
@@ -277,8 +294,17 @@ def render_auth_screen():
  
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+ 
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+ 
 .stApp {
-    background: #f6f8fb;
+    background:
+        radial-gradient(circle at 8% 8%, rgba(124, 131, 253, 0.10), transparent 42%),
+        radial-gradient(circle at 92% 15%, rgba(43, 58, 140, 0.08), transparent 42%),
+        #f5f6ff;
 }
  
 .block-container {
@@ -288,7 +314,7 @@ st.markdown("""
 }
  
 section[data-testid="stSidebar"] {
-    background: #0b1b33;
+    background: linear-gradient(180deg, #141b3a 0%, #1e2a63 100%);
 }
  
 section[data-testid="stSidebar"] * {
@@ -296,13 +322,14 @@ section[data-testid="stSidebar"] * {
 }
  
 .sidebar-logo {
-    font-size: 25px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px;
     font-weight: 700;
     margin-bottom: 4px;
 }
  
 .sidebar-subtitle {
-    color: #c7d2e3 !important;
+    color: #c7d2fe !important;
     font-size: 13px;
     margin-bottom: 25px;
 }
@@ -315,19 +342,20 @@ section[data-testid="stSidebar"] * {
 }
  
 .sidebar-active {
-    background: #1c3150;
-    border-left: 3px solid #22c55e;
+    background: rgba(124, 131, 253, 0.22);
+    border-left: 3px solid #7c83fd;
 }
  
 .sidebar-market {
     margin-top: 35px;
     padding: 14px;
-    border: 1px solid #33445d;
+    border: 1px solid rgba(199, 210, 254, 0.25);
     border-radius: 10px;
+    background: rgba(124, 131, 253, 0.08);
 }
  
 .market-title {
-    color: #d0d9e8 !important;
+    color: #c7d2fe !important;
     font-size: 12px;
     margin-bottom: 12px;
 }
@@ -343,71 +371,81 @@ section[data-testid="stSidebar"] * {
 }
  
 .market-change {
-    color: #22c55e !important;
+    color: #7c83fd !important;
     font-size: 11px;
     margin-top: 2px;
 }
  
 .page-title {
-    font-size: 34px;
-    font-weight: 750;
-    color: #101828;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: #141b3a;
     margin-bottom: 2px;
 }
  
 .page-subtitle {
-    color: #475467;
+    color: #2b3a8c;
     font-size: 14px;
     margin-bottom: 22px;
 }
  
 .summary-card {
     background: white;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e0e4fb;
     border-radius: 14px;
     padding: 18px;
     min-height: 112px;
-    box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
+    box-shadow: 0 2px 10px rgba(43, 58, 140, 0.06);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+ 
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(43, 58, 140, 0.14);
 }
  
 .summary-label {
-    color: #475467;
+    color: #2b3a8c;
     font-size: 12px;
 }
  
 .summary-value {
-    color: #101828;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #141b3a;
     font-size: 28px;
     font-weight: 700;
     margin-top: 7px;
 }
  
 .summary-description {
-    color: #98A2B3;
+    color: #8890c9;
     font-size: 11px;
     margin-top: 4px;
 }
  
 .digest-box {
-    background: linear-gradient(135deg, #0b1b33, #1c3150);
+    background: #c7d2fe;
     border-radius: 16px;
     padding: 20px 24px;
     margin: 22px 0;
-    color: white;
+    color: #141b3a;
+    box-shadow: 0 4px 16px rgba(43, 58, 140, 0.12);
 }
  
 .digest-title {
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.5px;
-    color: #9ad8ff !important;
+    color: #2b3a8c !important;
     margin-bottom: 8px;
 }
  
 .digest-text {
     font-size: 16px;
     line-height: 1.5;
-    color: #ffffff !important;
+    color: #141b3a !important;
 }
  
 .digest-tag {
@@ -429,16 +467,22 @@ section[data-testid="stSidebar"] * {
     color: #b45309;
 }
  
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+ 
 /* Card container + hover lift, applied to Streamlit's bordered
    container wrapper so every card gets consistent motion feedback */
 div[data-testid="stVerticalBlockBorderWrapper"] {
     border-radius: 16px !important;
     transition: box-shadow 0.18s ease, transform 0.18s ease;
+    animation: cardFadeIn 0.4s ease both;
 }
  
 div[data-testid="stVerticalBlockBorderWrapper"]:hover {
-    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.10);
-    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(43, 58, 140, 0.14);
+    transform: translateY(-3px);
 }
  
 .accent-bar {
@@ -449,9 +493,11 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     margin: 4px auto;
 }
  
-.accent-high { background: #dc2626; }
-.accent-medium { background: #f59e0b; }
-.accent-low { background: #22c55e; }
+/* Kept as universal red/amber/green - urgency indicators need to stay
+   instantly scannable regardless of the brand palette above them. */
+.accent-high { background: linear-gradient(180deg, #dc2626, #f97316); }
+.accent-medium { background: linear-gradient(180deg, #f59e0b, #fbbf24); }
+.accent-low { background: linear-gradient(180deg, #16a34a, #22d3ee); }
  
 .avatar-circle {
     width: 42px;
@@ -464,22 +510,25 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     font-weight: 700;
     font-size: 13px;
     margin-bottom: 6px;
+    box-shadow: 0 3px 8px rgba(20, 27, 58, 0.2);
 }
  
 .stock-symbol {
-    color: #101828;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #141b3a;
     font-size: 19px;
     font-weight: 700;
 }
  
 .stock-company {
-    color: #475467;
+    color: #2b3a8c;
     font-size: 12px;
     margin-top: 3px;
 }
  
 .stock-price {
-    color: #101828;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #141b3a;
     font-size: 25px;
     font-weight: 700;
 }
@@ -495,24 +544,24 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 }
  
 .neutral {
-    color: #475467 !important;
+    color: #2b3a8c !important;
     font-weight: 650;
 }
  
 .metric-label {
-    color: #475467;
+    color: #2b3a8c;
     font-size: 11px;
     margin-bottom: 7px;
 }
  
 .metric-value {
-    color: #101828;
+    color: #141b3a;
     font-size: 16px;
     font-weight: 650;
 }
  
 .metric-small {
-    color: #98A2B3;
+    color: #8890c9;
     font-size: 11px;
     margin-top: 5px;
 }
@@ -520,7 +569,7 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 .metric-panel {
     min-height: 105px;
     padding: 8px 12px;
-    border-right: 1px solid #eaecf0;
+    border-right: 1px solid #e0e4fb;
 }
  
 .score-container {
@@ -538,30 +587,32 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     background:
         radial-gradient(circle, white 57%, transparent 58%),
         conic-gradient(
-            #f59e0b 0deg,
-            #f59e0b var(--score-angle),
-            #e5e7eb var(--score-angle),
-            #e5e7eb 360deg
+            var(--score-color, #2b3a8c) 0deg,
+            var(--score-color, #2b3a8c) var(--score-angle),
+            #e0e4fb var(--score-angle),
+            #e0e4fb 360deg
         );
 }
  
 .score-number {
-    color: #101828;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #141b3a;
     font-size: 20px;
     font-weight: 700;
 }
  
 .score-max {
-    color: #475467;
+    color: #8890c9;
     font-size: 10px;
 }
  
 .badge {
     display: inline-block;
-    padding: 5px 10px;
-    border-radius: 7px;
+    padding: 5px 10px 5px 10px;
+    border-radius: 20px;
     font-size: 10px;
     font-weight: 700;
+    position: relative;
 }
  
 .badge-low {
@@ -577,24 +628,44 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 .badge-high {
     background: #fee2e2;
     color: #b91c1c;
+    padding-left: 18px;
+}
+ 
+@keyframes pulseDot {
+    0% { box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.55); }
+    70% { box-shadow: 0 0 0 6px rgba(185, 28, 28, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(185, 28, 28, 0); }
+}
+ 
+.badge-high::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #b91c1c;
+    animation: pulseDot 1.5s infinite;
 }
  
 .trend-card {
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e0e4fb;
     border-radius: 11px;
     padding: 14px;
     background: #ffffff;
 }
  
 .trend-title {
-    color: #101828;
+    color: #141b3a;
     font-size: 12px;
     font-weight: 650;
     margin-bottom: 12px;
 }
  
 .trend-label {
-    color: #475467;
+    color: #2b3a8c;
     font-size: 10px;
 }
  
@@ -613,7 +684,7 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 }
  
 .trend-value-neutral {
-    color: #475467;
+    color: #2b3a8c;
     font-weight: 700;
     font-size: 15px;
     margin-top: 3px;
@@ -641,8 +712,8 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 }
  
 .trend-confirmed-neutral {
-    background: #f2f4f7;
-    color: #475467;
+    background: #eef0fd;
+    color: #2b3a8c;
 }
  
 .history-panel {
@@ -650,20 +721,25 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
 }
  
 .history-value {
-    color: #101828;
+    color: #141b3a;
     font-size: 16px;
     font-weight: 700;
 }
  
 div.stButton > button {
     border-radius: 9px;
-    border: 1px solid #d0d5dd;
-    background: white;
+    border: none;
+    background: #2b3a8c;
+    color: white !important;
+    font-weight: 600;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
  
 div.stButton > button:hover {
-    border-color: #22c55e;
-    color: #15803d;
+    background: #7c83fd;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(43, 58, 140, 0.3);
+    color: white !important;
 }
  
 div[data-testid="stExpander"] {
@@ -671,36 +747,37 @@ div[data-testid="stExpander"] {
 }
  
 .info-box {
-    background: #eff6ff;
-    border: 1px solid #dbeafe;
+    background: #eef0fd;
+    border: 1px solid #c7d2fe;
     border-radius: 12px;
     padding: 14px;
     margin-top: 22px;
-    color: #1e40af;
+    color: #2b3a8c;
     font-size: 11px;
 }
  
 section[data-testid="stSidebar"] div.stButton > button {
-    background: #1c3150;
+    background: rgba(124, 131, 253, 0.18);
     color: white !important;
-    border: 1px solid #33445d;
+    border: 1px solid rgba(199, 210, 254, 0.4);
 }
  
 section[data-testid="stSidebar"] div.stButton > button:hover {
-    background: #22c55e;
-    border-color: #22c55e;
-    color: white !important;
+    background: #7c83fd;
+    border-color: #7c83fd;
+    color: #141b3a !important;
 }
  
 .pulse-header {
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 20px;
-    font-weight: 750;
-    color: #101828;
+    font-weight: 700;
+    color: #141b3a;
     margin: 34px 0 4px 0;
 }
  
 .pulse-subtitle {
-    color: #475467;
+    color: #2b3a8c;
     font-size: 13px;
     margin-bottom: 16px;
 }
@@ -710,13 +787,13 @@ section[data-testid="stSidebar"] div.stButton > button:hover {
 }
  
 .pulse-symbol {
-    color: #101828;
+    color: #141b3a;
     font-size: 15px;
     font-weight: 700;
 }
  
 .pulse-price {
-    color: #101828;
+    color: #141b3a;
     font-size: 16px;
     font-weight: 650;
     margin-top: 2px;
@@ -955,7 +1032,7 @@ def get_market_pulse(tracked_symbols, top_n=4):
  
     for symbol in candidates:
         try:
-            info = fetch_stock_history(symbol)
+            info, _ = fetch_stock_history(symbol)
  
             if len(info) < 2:
                 continue
@@ -979,6 +1056,7 @@ def get_market_pulse(tracked_symbols, top_n=4):
                 "symbol": symbol,
                 "price": latest_price,
                 "change": change_pct,
+                "volatility": volatility,
                 "score": score,
                 "level": level,
             })
@@ -1064,14 +1142,18 @@ def accent_class(level):
  
  
 AVATAR_PALETTE = [
-    "#2563eb", "#7c3aed", "#db2777", "#ea580c",
-    "#0891b2", "#16a34a", "#4f46e5", "#c026d3",
+    "linear-gradient(135deg, #2b3a8c, #7c83fd)",
+    "linear-gradient(135deg, #141b3a, #2b3a8c)",
+    "linear-gradient(135deg, #312e81, #7c83fd)",
+    "linear-gradient(135deg, #1e3a8a, #7c83fd)",
+    "linear-gradient(135deg, #4338ca, #a5b4fc)",
+    "linear-gradient(135deg, #1e2a63, #6366f1)",
 ]
  
  
 def avatar_color(symbol):
-    """Deterministic color per symbol, so the same stock always gets
-    the same avatar color across visits/reruns."""
+    """Deterministic gradient per symbol, so the same stock always gets
+    the same avatar look across visits/reruns."""
     digest = hashlib.md5(symbol.encode()).hexdigest()
     index = int(digest, 16) % len(AVATAR_PALETTE)
     return AVATAR_PALETTE[index]
@@ -1206,7 +1288,12 @@ symbols = get_watchlist()
 @st.cache_data(ttl=60)
 def fetch_stock_history(symbol):
     ticker = yf.Ticker(symbol)
-    return ticker.history(period="1mo", timeout=10)
+    # Explicit timeout so a slow/unreliable network can't hang the
+    # entire page indefinitely - an unreliable dependency should fail
+    # fast and visibly, not stall the whole app.
+    history = ticker.history(period="1mo", timeout=10)
+    fetched_at = datetime.now()
+    return history, fetched_at
  
  
 stock_data = []
@@ -1214,7 +1301,7 @@ failed_symbols = []
  
 for symbol in symbols:
     try:
-        info = fetch_stock_history(symbol)
+        info, fetched_at = fetch_stock_history(symbol)
  
         if len(info) < 2:
             failed_symbols.append(symbol)
@@ -1272,12 +1359,20 @@ for symbol in symbols:
             level = "LOW"
             signal = "FIRST VISIT"
  
-        save_snapshot(symbol, latest_price)
+        save_snapshot_failed = False
+        try:
+            save_snapshot(symbol, latest_price)
  
-        if should_log_visit(symbol, score, level):
-            log_visit(symbol, score, level)
+            if should_log_visit(symbol, score, level):
+                log_visit(symbol, score, level)
  
-        sig_count, visit_count = get_recent_significant_count(symbol, limit=5)
+            sig_count, visit_count = get_recent_significant_count(symbol, limit=5)
+        except Exception:
+            # Persistence hiccup (Supabase) - the user's price data is
+            # still valid and shown; only the "since last visit" memory
+            # for this refresh couldn't be saved. Don't hide the card.
+            save_snapshot_failed = True
+            sig_count, visit_count = 0, 0
  
         stock_data.append({
             "symbol": symbol,
@@ -1297,17 +1392,33 @@ for symbol in symbols:
             "sparkline": info["Close"].tail(30),
             "sig_count": sig_count,
             "visit_count": visit_count,
+            "fetched_at": fetched_at,
+            "save_snapshot_failed": save_snapshot_failed,
         })
  
     except Exception:
+        # Market-data fetch failed (network, timeout, or yfinance issue) -
+        # this is a genuinely different failure than a database hiccup,
+        # and the user's saved watchlist itself is never at risk either way.
         failed_symbols.append(symbol)
         continue
  
 if failed_symbols:
     st.warning(
-        f"Couldn't fetch live data for: {', '.join(failed_symbols)}. "
-        f"This may be due to an invalid symbol or a temporary issue "
-        f"with the data source."
+        f"Market data temporarily unavailable for: {', '.join(failed_symbols)}. "
+        f"Your saved watchlist is safe - this will retry automatically "
+        f"on your next refresh."
+    )
+ 
+db_warning_symbols = [
+    d["symbol"] for d in stock_data if d.get("save_snapshot_failed")
+]
+if db_warning_symbols:
+    st.warning(
+        f"Couldn't save this visit's snapshot for: "
+        f"{', '.join(db_warning_symbols)}. Prices shown below are still "
+        f"live and accurate - only the 'since last visit' comparison "
+        f"may be affected until the next successful save."
     )
  
 # Sort so the highest-attention stocks appear first - directly answers
@@ -1428,6 +1539,7 @@ for data in stock_data:
     sparkline = data["sparkline"]
     sig_count = data["sig_count"]
     visit_count = data["visit_count"]
+    fetched_at = data["fetched_at"]
  
     change_cls = movement_class(change)
     diff_cls = movement_class(diff_pct)
@@ -1446,6 +1558,12 @@ for data in stock_data:
     acc_cls = accent_class(level)
     av_color = avatar_color(symbol)
     av_initials = avatar_initials(symbol)
+ 
+    score_color = (
+        "#dc2626" if level == "HIGH"
+        else "#f59e0b" if level == "MEDIUM"
+        else "#16a34a"
+    )
  
     # Each card lives inside a bordered container - this is what the
     # hover-lift CSS above targets, giving every card a real "card" feel.
@@ -1475,7 +1593,9 @@ for data in stock_data:
                     {change:+.2f}% &nbsp;
                     {"↑" if change > 0 else "↓" if change < 0 else "→"}
                 </div>
-                <div class="metric-small">Today's change</div>
+                <div class="metric-small">
+                    Today's change · data as of {fetched_at.strftime('%I:%M:%S %p')}
+                </div>
             """), unsafe_allow_html=True)
  
         with top3:
@@ -1517,7 +1637,7 @@ for data in stock_data:
                     <div class="metric-label">MEANINGFUL SCORE</div>
                     <div
                         class="score-circle"
-                        style="--score-angle:{angle}deg;"
+                        style="--score-angle:{angle}deg; --score-color:{score_color};"
                     >
                         <div>
                             <div class="score-number">{score:.2f}</div>
@@ -1708,6 +1828,28 @@ else:
                         </div>
                     </div>
                 """), unsafe_allow_html=True)
+ 
+                with st.expander("Why is this showing?"):
+                    d_volatility = disc["volatility"]
+                    if d_volatility > 0:
+                        d_ratio = abs(disc["change"]) / d_volatility
+                        st.write(
+                            f"Today's {abs(disc['change']):.2f}% move is "
+                            f"**{d_ratio:.2f}×** this stock's normal daily "
+                            f"volatility ({d_volatility:.2f}%) — "
+                            f"that's what earned it a **{disc['level']}** "
+                            f"attention level."
+                        )
+                    else:
+                        st.write(
+                            f"Today's move was {disc['change']:+.2f}%, "
+                            "with no reliable volatility baseline yet."
+                        )
+                    st.caption(
+                        "Surfaced from a fixed set of major NSE stocks "
+                        "you're not currently tracking - not a "
+                        "recommendation to buy or sell."
+                    )
  
                 if st.button(
                     "＋ Add to Watchlist",

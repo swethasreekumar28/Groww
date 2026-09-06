@@ -32,6 +32,128 @@ supabase = get_supabase_client()
 cookie_controller = CookieController()
 
 
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .stApp {
+        background:
+            radial-gradient(circle at 8% 8%, rgba(124, 131, 253, 0.10), transparent 42%),
+            radial-gradient(circle at 92% 15%, rgba(43, 58, 140, 0.08), transparent 42%),
+            #f5f6ff;
+    }
+
+    .block-container {
+        max-width: 1450px;
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
+    }
+
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #141b3a 0%, #1e2a63 100%);
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: white;
+    }
+
+    section[data-testid="stSidebar"] [data-testid="stSidebarNav"] a[aria-current="page"] {
+        background: rgba(124, 131, 253, 0.22);
+        border-left: 3px solid #7c83fd;
+        border-radius: 9px;
+    }
+
+    .stCaption {
+        color: #2b3a8c;
+    }
+
+    h1, h2, h3 {
+        font-family: 'Space Grotesk', sans-serif;
+        color: #141b3a;
+    }
+
+    h1 {
+        font-weight: 700;
+    }
+
+    [data-testid="stMetric"] {
+        background: white;
+        border: 1px solid #e0e4fb;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 2px 10px rgba(43, 58, 140, 0.06);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(43, 58, 140, 0.14);
+    }
+
+    [data-testid="stMetricLabel"] {
+        color: #2b3a8c;
+    }
+
+    [data-testid="stMetricValue"] {
+        font-family: 'Space Grotesk', sans-serif;
+        color: #141b3a;
+    }
+
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        border-radius: 16px !important;
+        transition: box-shadow 0.18s ease, transform 0.18s ease;
+        animation: cardFadeIn 0.4s ease both;
+    }
+
+    div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+        box-shadow: 0 10px 28px rgba(43, 58, 140, 0.14);
+        transform: translateY(-2px);
+    }
+
+    @keyframes cardFadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    div.stButton > button {
+        border-radius: 9px;
+        border: none;
+        background: #2b3a8c;
+        color: white !important;
+        font-weight: 600;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    div.stButton > button:hover {
+        background: #7c83fd;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(43, 58, 140, 0.3);
+        color: white !important;
+    }
+
+    [data-testid="stDataFrame"] {
+        border: 1px solid #e0e4fb;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(43, 58, 140, 0.06);
+    }
+
+    [data-testid="stAlert"] {
+        border-radius: 12px;
+        background: #c7d2fe;
+        color: #141b3a;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
 def get_current_user_id():
     """Return the authenticated user ID from the shared browser session."""
     access_token = cookie_controller.get("sb_access_token")
@@ -78,7 +200,7 @@ def get_change_level(score):
 @st.cache_data(ttl=60)
 def fetch_stock_history(symbol):
     ticker = yf.Ticker(symbol)
-    return ticker.history(period="1mo")
+    return ticker.history(period="1mo", timeout=10)
 
 
 def get_watchlist(user_id):
