@@ -1,14 +1,12 @@
 GrowwStock
-Built for Code by Groww (2026) — "Build a Smart Market Watchlist"
-
-A market watchlist that doesn't just show prices — it tells you what actually changed since you last checked, and what deserves your attention right now.
+A market watchlist that doesn't just show prices ,it tells you what actually changed since you last checked, and what deserves your attention right now.
 
 What it does
-Track stocks — add/remove any NSE-listed stock (case-insensitive, handles missing .NS suffixes automatically), with a real, persistent, per-user watchlist backed by a hosted database — not local storage.
+Track stocks — add/remove any NSE-listed stock (case-insensitive, handles missing .NS suffixes automatically), with a real, persistent, per-user watchlist backed by a hosted database not local storage.
 
-See what's meaningfully changed since you last checked — every visit is snapshotted. On your next visit, the app compares the current price against your own last snapshot (not just today's open) and shows a real diff.
+See what's meaningfully changed since you last checked ; every visit is snapshotted. On your next visit, the app compares the current price against your own last snapshot (not just today's open) and shows a real diff.
 
-Know what deserves attention now — a composite Meaningful Change Score (0–100) combines:
+Know what deserves attention now ; a composite Meaningful Change Score (0–100) combines:
 
 today's raw price movement
 movement since your last visit
@@ -26,9 +24,9 @@ Navigation and visual polish — working multipage navigation, deterministic ava
 Key design decisions
 Volatility-adjusted scoring, not raw % change. A flat percentage threshold treats every stock the same; comparing movement against a stock's own historical volatility gives a more honest signal of what's actually unusual for that stock.
 
-Snapshot-based comparison, not a fixed daily job. "Since you last checked" is visit-triggered — it compares against whenever you last opened the app, not a fixed clock time. This matches how people actually check a watchlist (irregularly), rather than assuming daily use.
+Snapshot-based comparison, not a fixed daily job. "Since you last checked" is visit-triggered .It compares against whenever you last opened the app, not a fixed clock time. This matches how people actually check a watchlist (irregularly), rather than assuming daily use.
 
-Visit-history tracking. Beyond the single latest snapshot, every visit's score is logged, powering a "significant movement in X of your last 5 visits" pattern — so a one-off spike reads differently from a stock that's been consistently active.
+Visit-history tracking. Beyond the single latest snapshot, every visit's score is logged, powering a "significant movement in X of your last 5 visits" pattern so a one-off spike reads differently from a stock that's been consistently active.
 
 Real per-user isolation via Supabase + Row-Level Security. Each user authenticates with email (sign-up, email verification, sign-in), and Postgres Row-Level Security enforces that every query only touches that user's own rows — enforced at the database layer, not just in application code. Verified directly: RLS is confirmed enabled on all three tables (watchlist, snapshots, visit_history), each with a policy scoping access to auth.uid() = user_id.
 
@@ -62,7 +60,7 @@ The app will open at http://localhost:8501. Sign up with an email and password (
 Live demo:
 https://4dxy8beld8pg9unboqllgs.streamlit.app
 
-Note: the demo runs on Streamlit Community Cloud's free tier, which sleeps after a period of inactivity. If you see a "Zzz" screen, click "Yes, get this app back up" — it resumes in under a minute.
+Note: the demo runs on Streamlit Community Cloud's free tier, which sleeps after a period of inactivity. If you see a "Zzz" screen, click "Yes, get this app back up" ,it resumes in under a minute.
 
 Edge cases handled
 ✓ Invalid or misspelled stock symbols are validated against live data before being added, with a clear error message
@@ -73,7 +71,7 @@ Edge cases handled
 ✓ Empty watchlist shows a clear call-to-action instead of a blank page
 ✓ Light theme is enforced app-wide to avoid visibility issues under a visitor's system dark-mode setting
 Known trade-offs (given the 72-hour timeline)
-Fuzzy company-name matching (e.g. typing "Infosys" instead of the ticker INFY) is not implemented — the app validates against real ticker symbols, not a name-to-ticker dictionary, to avoid an incomplete/misleading mapping. A clear error message guides the user to the correct ticker instead.
+Fuzzy company-name matching (e.g. typing "Infosys" instead of the ticker INFY) is not implemented The app validates against real ticker symbols, not a name-to-ticker dictionary, to avoid an incomplete/misleading mapping. A clear error message guides the user to the correct ticker instead.
 
 No live news or sector-trend data — scoring is based purely on price, volume-adjusted volatility, and visit history, not external news sentiment. This was a deliberate scope decision to keep the "meaningful change" signal grounded in verifiable market data rather than unreliable summarization. Discovery cards link out to a real news search instead of attempting summarization.
 
