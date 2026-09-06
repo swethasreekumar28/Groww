@@ -1008,7 +1008,7 @@ def validate_symbol(raw_input):
     for candidate in candidates:
         try:
             ticker = yf.Ticker(candidate)
-            data = ticker.history(period="5d")
+            data = ticker.history(period="5d", timeout=10)
  
             if not data.empty:
                 return candidate, None
@@ -1206,7 +1206,7 @@ symbols = get_watchlist()
 @st.cache_data(ttl=60)
 def fetch_stock_history(symbol):
     ticker = yf.Ticker(symbol)
-    return ticker.history(period="1mo")
+    return ticker.history(period="1mo", timeout=10)
  
  
 stock_data = []
