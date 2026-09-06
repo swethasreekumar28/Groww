@@ -11,7 +11,7 @@ from streamlit_cookies_controller import CookieController
 # ============================================================
  
 st.set_page_config(
-    page_title="Smart Market Watchlist",
+    page_title="GrowwStock",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -127,7 +127,7 @@ def render_auth_screen():
                 font-weight:700;
                 letter-spacing:0.5px;
                 margin-bottom:18px;
-            ">📈 SMART MARKET WATCHLIST</div>
+            ">📈 GROWWSTOCK</div>
             <h1 style="
                 font-family:'Space Grotesk', sans-serif;
                 font-size:44px;
@@ -318,7 +318,7 @@ section[data-testid="stSidebar"] {
 }
  
 section[data-testid="stSidebar"] * {
-    color: white;
+    color: white !important;
 }
  
 .sidebar-logo {
@@ -1180,7 +1180,7 @@ if not current_user_id:
  
 with st.sidebar:
     st.markdown(
-        '<div class="sidebar-logo">📈 Smart</div>',
+        '<div class="sidebar-logo">📈 GrowwStock</div>',
         unsafe_allow_html=True,
     )
  
